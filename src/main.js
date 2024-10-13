@@ -1,5 +1,6 @@
 const WebSocketServer = require('ws');
 const { roomService } = require('./services/instances/roomService.instance');
+const { keepAlive, heartbeat } = require('./utils/keepAlive');
 
 const port = process.env.PORT || 3001
 const wss = new WebSocketServer.Server({ port });
@@ -78,6 +79,9 @@ function onMessage(ev, ws) {
         room: roomService.getRoom(data.uuid)
       })));
       break;
+    case 'pong':
+      heartbeat(ws);
+      break;
     default:
       console.log('Uncaught message:', data);
   }
@@ -89,3 +93,6 @@ function sendError(ws, message) {
     message
   }))
 }
+
+const interval = keepAlive(wss);
+wss.on("close", () => clearInterval(interval));
