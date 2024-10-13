@@ -136,6 +136,12 @@ class RoomService {
     room.activeCharacter = active;
     this.editRoom(this.rooms[uuid]);
   }
+
+  updateEnvironment = (uuid, environment) => {
+    const room = this.getRoom(uuid);
+    room.environment = environment;
+    this.editRoom(this.rooms[uuid]);
+  }
 }
 
 function countSimilarNeighbors(map, i, j, type) {

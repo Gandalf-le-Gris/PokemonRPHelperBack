@@ -79,6 +79,13 @@ function onMessage(ev, ws) {
         room: roomService.getRoom(data.uuid)
       })));
       break;
+    case 'update-environment':
+      roomService.updateEnvironment(data.uuid, data.environment);
+      channels[data.uuid].forEach(ws => ws.send(JSON.stringify({
+        event: 'post-room',
+        room: roomService.getRoom(data.uuid)
+      })));
+      break;
     case 'pong':
       heartbeat(ws);
       break;
