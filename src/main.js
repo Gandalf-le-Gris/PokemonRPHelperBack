@@ -1,9 +1,12 @@
 const WebSocketServer = require('ws');
 const { roomService } = require('./services/instances/roomService.instance');
 
-const wss = new WebSocketServer.Server({ port: 8080 });
+const port = process.env.PORT || 3001
+const wss = new WebSocketServer.Server({ port });
 
-wss.on('listening', () => console.log('Listening on port 8080'));
+const channels = {};
+
+wss.on('listening', () => console.log(`Listening on port ${port}`));
 
 wss.on('connection', ws => {
   console.log('New connection');
@@ -16,14 +19,19 @@ function onMessage(ev, ws) {
   let room;
   switch (data.event) {
     case 'create-room':
+      room = roomService.createRoom();
+      channels[room.uuid] = [ws];
       ws.send(JSON.stringify({
         event: 'post-room',
-        room: roomService.createRoom()
+        room
       }));
       break;
     case 'get-room':
       room = roomService.getRoom(data.uuid);
       if (room) {
+        if (channels[data.uuid] && !channels[data.uuid].includes(ws)) {
+          channels[data.uuid].push(ws);
+        }
         ws.send(JSON.stringify({
           event: 'post-room',
           room
@@ -34,6 +42,41 @@ function onMessage(ev, ws) {
       break;
     case 'close-room':
       roomService.closeRoom(data.uuid);
+      break;
+    case 'regenerate-room':
+      room = roomService.regenerateRoom(data.uuid, data.options);
+      channels[data.uuid].forEach(ws => ws.send(JSON.stringify({
+        event: 'post-room',
+        room
+      })));
+      break;
+    case 'add-character':
+      roomService.addCharacter(data.uuid, data.character, data.isPlayer);
+      channels[data.uuid].forEach(ws => ws.send(JSON.stringify({
+        event: 'post-room',
+        room: roomService.getRoom(data.uuid)
+      })));
+      break;
+    case 'update-character':
+      roomService.updateCharacter(data.uuid, data.character);
+      channels[data.uuid].forEach(ws => ws.send(JSON.stringify({
+        event: 'post-room',
+        room: roomService.getRoom(data.uuid)
+      })));
+      break;
+    case 'remove-character':
+      roomService.removeCharacter(data.uuid, data.character);
+      channels[data.uuid].forEach(ws => ws.send(JSON.stringify({
+        event: 'post-room',
+        room: roomService.getRoom(data.uuid)
+      })));
+      break;
+    case 'update-initiative':
+      roomService.updateInitiative(data.uuid, data.initiativeList, data.activeCharacter);
+      channels[data.uuid].forEach(ws => ws.send(JSON.stringify({
+        event: 'post-room',
+        room: roomService.getRoom(data.uuid)
+      })));
       break;
     default:
       console.log('Uncaught message:', data);
