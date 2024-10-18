@@ -97,7 +97,7 @@ class RoomService {
     do {
       i = Math.floor(Math.random() * room.map.length);
       j = Math.floor(Math.random() * room.map[0].length);
-    } while (room.map[i][j].terrain !== 'p' && n < 10000);
+    } while ((room.map[i][j].terrain !== 'p' || room.characters.some(c => c.i === i && c.j === j)) && n < 100000);
     room.characters.push({
       i,
       j,
