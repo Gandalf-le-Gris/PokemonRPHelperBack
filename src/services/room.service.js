@@ -142,6 +142,12 @@ class RoomService {
     room.environment = environment;
     this.editRoom(this.rooms[uuid]);
   }
+
+  updateTerrain = (uuid, i, j, tile) => {
+    const room = this.getRoom(uuid);
+    room.map[i][j] = tile;
+    this.editRoom(this.rooms[uuid]);
+  }
 }
 
 function countSimilarNeighbors(map, i, j, type) {
