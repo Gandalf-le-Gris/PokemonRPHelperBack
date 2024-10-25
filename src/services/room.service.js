@@ -110,7 +110,7 @@ class RoomService {
 
   updateCharacter = (uuid, character) => {
     const room = this.getRoom(uuid);
-    if (room.characters.some(c => c.i === character.i && c.j === character.j)) {
+    if (room.characters.some(c => c.i === character.i && c.j === character.j && c.uuid !== character.uuid)) {
       return;
     }
     const index = room.characters.findIndex(e => e.character.uuid === character.character.uuid);
