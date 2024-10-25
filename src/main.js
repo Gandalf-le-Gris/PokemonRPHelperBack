@@ -93,6 +93,12 @@ function onMessage(ev, ws) {
         room: roomService.getRoom(data.uuid)
       })));
       break;
+    case 'move-asset':
+      roomService.moveAsset(data.uuid, data.i, data.j, data.assetUuid);
+      channels[data.uuid].forEach(ws => ws.send(JSON.stringify({
+        event: 'post-room',
+        room: roomService.getRoom(data.uuid)
+      })));
     case 'pong':
       heartbeat(ws);
       break;

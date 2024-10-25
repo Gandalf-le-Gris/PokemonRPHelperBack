@@ -57,11 +57,13 @@ class RoomService {
       for (let j = 0; j < width; j++) {
         if (isEdge(i, j, height, width)) {
           res[i].push({
-            terrain: Math.random() < .95 || isCorner(i, j, height, width) ? 'w' : 'p'
+            terrain: Math.random() < .95 || isCorner(i, j, height, width) ? 'w' : 'p',
+            assets: []
           });
         } else {
           res[i].push({
-            terrain: 'p'
+            terrain: 'p',
+            assets: []
           });
         }
       }
@@ -149,6 +151,18 @@ class RoomService {
   updateTerrain = (uuid, i, j, tile) => {
     const room = this.getRoom(uuid);
     room.map[i][j] = tile;
+    this.editRoom(this.rooms[uuid]);
+  }
+
+  moveAsset = (uuid, i, j, assetUuid) => {
+    const room = this.getRoom(uuid);
+    const assets = room.map
+      .flat()
+      .flat()
+      .find(tile => tile.assets.some(a => a.uuid === assetUuid))
+      .assets;
+    const [asset] = assets.splice(assets.findIndex(a => a.uuid === assetUuid), 1);
+    room.map[i][j].assets.push(asset);
     this.editRoom(this.rooms[uuid]);
   }
 }
