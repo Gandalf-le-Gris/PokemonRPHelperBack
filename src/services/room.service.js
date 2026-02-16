@@ -104,7 +104,15 @@ class RoomService {
       i,
       j,
       character,
-      isPlayer
+      isPlayer,
+      status: {},
+      stats: {
+        atk: 0,
+        def: 0,
+        spatk: 0,
+        spdef: 0,
+        spd: 0,
+      }
     });
     room.initiativeList.push(character.uuid);
     this.editRoom(this.rooms[uuid]);
