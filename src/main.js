@@ -20,7 +20,7 @@ function onMessage(ev, ws) {
   let room;
   switch (data.event) {
     case 'create-room':
-      room = roomService.createRoom();
+      room = roomService.createRoom(data.persistent);
       channels[room.uuid] = [ws];
       ws.send(JSON.stringify({
         event: 'post-room',

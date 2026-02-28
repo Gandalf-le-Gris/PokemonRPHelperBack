@@ -1,7 +1,7 @@
 class RoomService {
   rooms = {};
 
-  createRoom = () => {
+  createRoom = (persistent) => {
     let uuid;
     do {
       uuid = String(Math.floor(Math.random() * 1_000_000));
@@ -15,8 +15,9 @@ class RoomService {
       map: this.generateMap({ size: 15, difficulty: 3, crammed: 3 }),
       environment: 'ForestPath',
       characters: [],
-      timeout: this.setRoomTimeout(uuid),
+      timeout: this.setRoomTimeout(uuid, false),
       initiativeList: [],
+      persistent,
     };
 
     this.rooms[uuid] = room;
@@ -36,7 +37,7 @@ class RoomService {
 
   editRoom = (room) => {
     clearTimeout(room.timeout);
-    this.setRoomTimeout(room.uuid);
+    room.timeout = this.setRoomTimeout(room.uuid, room.persistent);
     this.rooms[room.uuid] = room;
   }
 
@@ -44,8 +45,8 @@ class RoomService {
     return this.rooms[uuid];
   }
 
-  setRoomTimeout = (uuid) => {
-    return Number(setTimeout(() => this.closeRoom(uuid), 1000 * 60 * 60 * 24));
+  setRoomTimeout = (uuid, persistent) => {
+    return Number(setTimeout(() => this.closeRoom(uuid), 1000 * 60 * 60 * 24 * (persistent ? 30 : 1)));
   }
 
   generateMap = (options) => {
