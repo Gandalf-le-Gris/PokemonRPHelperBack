@@ -99,6 +99,12 @@ function onMessage(ev, ws) {
         event: 'post-room',
         room: roomService.getRoom(data.uuid)
       })));
+    case 'roll-dice':
+      roomService.rollDice(data.uuid, data.characterId, data.value);
+      channels[data.uuid].forEach(ws => ws.send(JSON.stringify({
+        event: 'post-room',
+        room: roomService.getRoom(data.uuid)
+      })));
     case 'pong':
       heartbeat(ws);
       break;

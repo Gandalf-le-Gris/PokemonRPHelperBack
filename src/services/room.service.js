@@ -17,6 +17,7 @@ class RoomService {
       characters: [],
       timeout: this.setRoomTimeout(uuid, false),
       initiativeList: [],
+      rolls: [],
       persistent,
     };
 
@@ -173,6 +174,14 @@ class RoomService {
     const [asset] = assets.splice(assets.findIndex(a => a.uuid === assetUuid), 1);
     room.map[i][j].assets.push(asset);
     this.editRoom(this.rooms[uuid]);
+  }
+
+  rollDice = (uuid, characterId, value) => {
+    const room = this.getRoom(uuid);
+    room.rolls.push({
+      characterId,
+      value
+    })
   }
 }
 
